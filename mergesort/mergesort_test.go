@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestXxx(t *testing.T) {
+func TestMergeSortfn(t *testing.T) {
 	fmt.Println("tests")
 	TestMergeSort()
 }
