@@ -1,6 +1,10 @@
 package hashtable
 
-import "fmt"
+import 
+(
+	"fmt"
+	"sync"
+)
 
 func TestMain() {
 	defer func() {
@@ -24,6 +28,7 @@ type KeyValuePair[K comparable, V any] struct {
 }
 type GHashTable[K comparable, V any] struct {
 	Bucket [BucketSize][]KeyValuePair[K, V]
+	mu sync.Mutex
 }
 
 func (this *GHashTable[K, V]) hash(key K) int {
@@ -34,6 +39,8 @@ func (this *GHashTable[K, V]) hash(key K) int {
 	return sum
 }
 func (this *GHashTable[K, V]) Put(key K, value V) {
+	this.mu.Lock()
+	defer this.mu.Unlock()
 	index := this.hash(key)
 	bucket := &this.Bucket[index]
 
@@ -47,6 +54,9 @@ func (this *GHashTable[K, V]) Put(key K, value V) {
 }
 
 func (this *GHashTable[K, V]) Get(key K) (V, bool) {
+	this.mu.Lock()
+	defer this.mu.Unlock()
+
 	index := this.hash(key)
 	bucket := &this.Bucket[index]
 	for _, val := range *bucket {
@@ -59,6 +69,9 @@ func (this *GHashTable[K, V]) Get(key K) (V, bool) {
 }
 
 func (this *GHashTable[K, V]) Delete(key K) {
+	this.mu.Lock()
+	defer this.mu.Unlock()
+	
 	index := this.hash(key)
 	bucket := &this.Bucket[index]
 	for i, k := range *bucket {
