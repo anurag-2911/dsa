@@ -18,28 +18,46 @@ func tests() {
 	linkedlist := &XLinkedList{}
 	linkedlist.Append(100)
 	linkedlist.Append(200)
+	linkedlist.Append(200)
 	linkedlist.Append(300)
 	linkedlist.Append(400)
 
 	linkedlist.Traverse()
+
 	linkedlist.Remove(400)
-	linkedlist.Traverse()
-}
 
+}
+// delete duplicate from a sorted list
 func deleteDuplicates(head *ListNode) *ListNode {
-	return nil
+	if head == nil {
+		return nil
+	}
+	current := head
+	for current.Next != nil {
+		if current.Val == current.Next.Val {
+			current.Next = current.Next.Next
+		} else {
+			current = current.Next
+		}
+	}
+
+	return head
 }
 
-type ListNode struct {
+type Node struct {
 	data int
-	next *ListNode
+	next *Node
+}
+type ListNode struct {
+	Val  int
+	Next *ListNode
 }
 type XLinkedList struct {
-	head *ListNode
+	head *Node
 }
 
 func (this *XLinkedList) Append(value int) {
-	node := &ListNode{data: value}
+	node := &Node{data: value}
 	if this.head == nil {
 		this.head = node
 		return
