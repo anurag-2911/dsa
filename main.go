@@ -1,10 +1,11 @@
 package main
 
-import
-(
+import (
 	"fmt"
 )
 
-func main(){
-	fmt.Println("main function")
+func main() {
+	fmt.Println("main function")	
 }
+
+
