@@ -16,4 +16,5 @@ func TestAppend(t *testing.T) {
 	linkedList.Traverse()
 	linkedList.Remove(600)
 	linkedList.Traverse()
+	linkedList.TraverseRecursively()
 }

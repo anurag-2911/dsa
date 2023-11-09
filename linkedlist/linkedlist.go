@@ -40,26 +40,36 @@ func (this *LinkedList) Traverse() {
 	}
 	fmt.Println()
 }
-
+func (ll *LinkedList) TraverseRecursively() {
+	ll.TraverseRecursivelyHelper(ll.Head)
+}
+func (ll *LinkedList) TraverseRecursivelyHelper(head *Node) {
+	if head == nil {
+		return
+	}
+	fmt.Print(head.Data)
+	fmt.Print(" -> ")
+	ll.TraverseRecursivelyHelper(head.Next)
+}
 func (this *LinkedList) Remove(data int) {
 	if this.Head == nil {
 		return
 	}
-	current := this.Head
-	prev := current
+
 	if this.Head.Data == data {
 		this.Head = this.Head.Next //first node itself
 		return
 	}
+	current := this.Head
 
-	for current != nil {
+	for current.Next != nil {
 
-		if current.Data == data {
-			prev.Next = current.Next
+		if current.Next.Data == data {
+			current.Next = current.Next.Next
 			return
 
 		}
-		prev = current
+
 		current = current.Next
 	}
 
