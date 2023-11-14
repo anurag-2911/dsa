@@ -5,14 +5,7 @@ import (
 )
 
 func TestXxx(t *testing.T) {
-
+	GraphMain()
 }
 
-type Node struct {
-	Value int
-}
 
-type Graph struct {
-	nodes []*Node
-	edges map[Node][]*Node
-}
