@@ -2,6 +2,7 @@ package recursion
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -54,4 +55,14 @@ func checkPalin(s string)bool{
 }
 func TestCheckPalin(t *testing.T){
 	fmt.Println(checkPalin("racecar"))
+	fmt.Println(checkPalin("halkah"))
+}
+func decimaltoBinary(n int)string{
+	if(n==0){
+		return ""
+	}
+	return decimaltoBinary(n/2) + strconv.Itoa(n%2)
+}
+func TestDecToBinary(t *testing.T){
+	fmt.Println(decimaltoBinary(7))
 }
