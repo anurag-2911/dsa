@@ -104,3 +104,22 @@ func TestXBinary(t *testing.T) {
 	fmt.Println(xbinarysrch([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 18))
 	fmt.Println(xbinarysrch([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 0))
 }
+
+func xfibonacci(n int)(int){
+	if(n==0 || n==1){
+		return n
+	}
+	n1:=n-1
+	n2:=n-2
+	return xfibonacci(n1)+ xfibonacci(n2)
+}
+func TestFibo(t *testing.T){
+	//0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144
+	fmt.Println(xfibonacci(5))
+	fmt.Println(xfibonacci(6))
+	fmt.Println(xfibonacci(7))
+	fmt.Println(xfibonacci(8))
+
+
+}
+
