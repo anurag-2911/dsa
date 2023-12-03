@@ -118,3 +118,37 @@ func mergesortedarrays(arr1 []int, arr2 []int) []int {
 func TestMergeSortedArray(t *testing.T) {
 	fmt.Println(mergesortedarrays([]int{1, 3, 5}, []int{2, 4, 6}))
 }
+
+func findDupElems(arr []int) []int {
+	list := make(map[int]int, 0)
+	duparr := make([]int, 0, len(arr))
+	for _, elem := range arr {
+		_, exists := list[elem]
+		if exists {
+			duparr = append(duparr, elem)
+		} else {
+			list[elem] = 1
+		}
+	}
+	return duparr
+}
+func TestDupElems(t *testing.T) {
+	fmt.Println(findDupElems([]int{1, 3, 3, 4, 5, 5}))
+}
+
+func findMajorityElement(arr []int) int {
+    n2 := len(arr) / 2
+    countMap := make(map[int]int)
+
+    for _,v:=range arr{
+		countMap[v]++
+		if countMap[v]>n2{
+			return v
+		}
+	}
+    return -1 // Return -1 if no majority element is found
+}
+func TestMajorityElemInArray(t *testing.T) {
+	arr:=[]int{2, 2, 1, 1, 2, 2}
+	fmt.Println(findMajorityElement(arr))
+}
