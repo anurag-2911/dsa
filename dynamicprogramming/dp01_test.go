@@ -45,7 +45,7 @@ func xfibmemo(n int, result map[int]int) int {
 }
 
 func TestXGrdTraveller(t *testing.T) {
-	fmt.Println(xGridMemoizedTraveller(3,3,make(map[string]int)))
+	fmt.Println(xGridMemoizedTraveller(3, 3, make(map[string]int)))
 	fmt.Println(xGridTraveller(3, 3))
 }
 
@@ -76,4 +76,31 @@ func xGridMemoizedTraveller(r, c int, result map[string]int) int {
 
 	return result[key]
 
+}
+
+func TestXCamSum(t *testing.T) {
+	fmt.Println(xCanSum(7, []int{2, 3}))
+	fmt.Println(xCanSum(7, []int{5, 3, 4, 7}))
+	fmt.Println(xCanSum(7, []int{2, 4}))
+	fmt.Println(xCanSum(8, []int{2, 3, 5}))
+	fmt.Println(xCanSum(300, []int{7, 14}))
+
+}
+
+func xCanSum(target int, arr []int) bool {
+	if target==0{
+		return true
+	}
+	if target<0{
+		return false
+	}
+
+	for _,val:= range arr{
+		target=target-val
+		if xCanSum(target,arr)==true{
+			return true
+		}
+	}
+
+	return false
 }
