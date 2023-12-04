@@ -172,3 +172,7 @@ func xmerge(left []int, right []int) []int {
 
 	return result
 }
+
+type XNode struct{
+	
+}

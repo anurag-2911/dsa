@@ -137,18 +137,33 @@ func TestDupElems(t *testing.T) {
 }
 
 func findMajorityElement(arr []int) int {
-    n2 := len(arr) / 2
-    countMap := make(map[int]int)
+	n2 := len(arr) / 2
+	countMap := make(map[int]int)
 
-    for _,v:=range arr{
+	for _, v := range arr {
 		countMap[v]++
-		if countMap[v]>n2{
+		if countMap[v] > n2 {
 			return v
 		}
 	}
-    return -1 // Return -1 if no majority element is found
+	return -1 // Return -1 if no majority element is found
 }
 func TestMajorityElemInArray(t *testing.T) {
-	arr:=[]int{2, 2, 1, 1, 2, 2}
+	arr := []int{2, 2, 1, 1, 2, 2}
 	fmt.Println(findMajorityElement(arr))
+}
+
+/*
+Kadane's Algorithm (Max Subarray Sum): Find the maximum sum of a contiguous subarray.
+
+Input: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+Output: 6 (subarray [4, -1, 2, 1])
+*/
+
+func maxSum(arr []int) int {
+	
+	return -1
+}
+func TestMaxSum(t *testing.T) {
+	fmt.Println(maxSum([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}))
 }
