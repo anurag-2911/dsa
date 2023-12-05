@@ -79,28 +79,58 @@ func xGridMemoizedTraveller(r, c int, result map[string]int) int {
 }
 
 func TestXCamSum(t *testing.T) {
-	fmt.Println(xCanSum(7, []int{2, 3}))
-	fmt.Println(xCanSum(7, []int{5, 3, 4, 7}))
-	fmt.Println(xCanSum(7, []int{2, 4}))
-	fmt.Println(xCanSum(8, []int{2, 3, 5}))
-	fmt.Println(xCanSum(300, []int{7, 14}))
+	res:=xCanSum(7, []int{2, 3})
+	fmt.Println(res)
+	res=xCanSum(7, []int{5, 3, 4, 7})
+	fmt.Println(res)
+	res=xCanSum(7, []int{2, 4})
+	fmt.Println(res)
+	res=xCanSum(8, []int{2, 3, 5})
+	fmt.Println(res)
+	res=xCanSum(300, []int{7, 14})
+	fmt.Println(res)
 
 }
 
 func xCanSum(target int, arr []int) bool {
-	if target==0{
-		return true
-	}
-	if target<0{
-		return false
-	}
+    if target == 0 {
+        return true
+    }
+    if target < 0 {
+        return false
+    }
 
-	for _,val:= range arr{
-		target=target-val
-		if xCanSum(target,arr)==true{
-			return true
-		}
-	}
+    for _, val := range arr {
+        remainder := target - val
+        if xCanSum(remainder, arr) {
+            return true
+        }
+    }
 
-	return false
+    return false
+}
+func xCanSumMemo(target int, arr []int, memo map[int]bool) bool {
+    // Check if result is already in the memo
+    if val, ok := memo[target]; ok {
+        return val
+    }
+
+    // Base cases
+    if target == 0 {
+        return true
+    }
+    if target < 0 {
+        return false
+    }
+
+    for _, val := range arr {
+        remainder := target - val
+        if xCanSumMemo(remainder, arr, memo) {
+            memo[target] = true
+            return true
+        }
+    }
+
+    memo[target] = false
+    return false
 }
