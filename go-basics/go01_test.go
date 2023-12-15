@@ -1,9 +1,9 @@
 package gobasics
 
-import
-(
-	"testing"
+import (
 	"fmt"
+	"testing"
+	"time"
 )
 
 func TestX(t *testing.T){
@@ -57,4 +57,54 @@ func mindmap(){
 		fmt.Println(i,s)
 	}
 	fmt.Println(session)
+}
+
+func TestStructMethods(t *testing.T){
+	bundle:=&Bundle{}
+	bundle.Add("1","one")
+}
+type Bundle struct{
+	list map[string]string
+}
+func NewBundle()*Bundle{
+	return &Bundle{list:map[string]string{}}
+}
+func(b *Bundle)Add(id string,Name string){
+	if b.list==nil{
+		b.list=make(map[string]string)
+	}
+	b.list[id]=Name
+}
+func TestIFace(t *testing.T){
+	var action Action
+	action=&FileCopy{}
+	fmt.Println(action.actionName(),action.processAction())
+	action=&InstallDir{}
+	fmt.Println(action.actionName(),action.processAction())
+}
+
+type Action interface{
+	processAction()bool
+	actionName()string
+}
+
+type FileCopy struct{
+
+}
+func(fc *FileCopy)processAction()bool{
+	time.Sleep(2*time.Second)
+	return true
+}
+func(fc *FileCopy)actionName()string{
+	return "FileCopy"
+}
+type InstallDir struct{
+
+}
+func(id *InstallDir)processAction()bool{
+	time.Sleep(time.Second*2)
+	return true
+}
+func(id *InstallDir)actionName()string{
+	return "InstallDir"
 }
