@@ -286,3 +286,85 @@ func TestSTimeOut(t *testing.T) {
 
 	fmt.Println("all done")
 }
+
+func TestXWrksPoolPattern(t *testing.T) {
+	const numOfJobs = 5
+	jobs := make(chan int, numOfJobs)
+	results := make(chan int, numOfJobs)
+
+	for w := 0; w < 3; w++ {
+		go xyworker(jobs, results, w)
+	}
+
+	for j := 0; j < numOfJobs; j++ {
+		jobs <- j
+	}
+	close(jobs)
+
+	for r := range results {
+		fmt.Println("result is ", r)
+	}
+	fmt.Println("all done")
+
+}
+func xyworker(jobs <-chan int, results chan<- int, id int) {
+	for job := range jobs {
+		fmt.Printf("worker %d started job %d\n", id, job)
+		time.Sleep(time.Second * 15)
+		results <- job * 2
+		fmt.Printf("wrker %d finished job %d\n", id, job)
+	}
+	close(results)
+
+}
+
+func TestRateLimit(t *testing.T) {
+	requests := make(chan int, 5)
+
+	for i := 0; i < 5; i++ {
+		requests <- i
+	}
+	close(requests)
+
+	limiter := time.Tick(2 * time.Second)
+
+	for req := range requests {
+		<-limiter
+		fmt.Println("request", req, time.Now())
+	}
+}
+
+func TestXFan(t *testing.T) {
+	ch := make(chan int, 5)
+	out := make(chan int, 25)
+	var wg sync.WaitGroup
+
+	go fprducer(ch, 10)
+
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go fcnsumer(ch, out, &wg)
+	}
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+	for val := range out {
+		fmt.Println(val)
+	}
+	fmt.Println("all done")
+}
+
+func fprducer(ch chan<- int, id int) {
+	for i := 0; i < 5; i++ {
+		ch <- i * id
+	}
+	close(ch)
+}
+
+func fcnsumer(ch <-chan int, out chan<- int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for val := range ch {
+		out <- val * val
+	}
+}
