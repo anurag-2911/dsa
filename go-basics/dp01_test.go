@@ -45,13 +45,12 @@ func gridTraveller(x, y int) int {
 	return gridTraveller(x-1, y) + gridTraveller(x, y-1)
 }
 func TestGridTraveller(t *testing.T) {
-	fmt.Println(gridTravellermemo(1, 1,make(map[string]int))) //1
-	fmt.Println(gridTravellermemo(2, 3,make(map[string]int))) //3
-	fmt.Println(gridTravellermemo(3, 2,make(map[string]int))) //3
-	fmt.Println(gridTravellermemo(3, 3,make(map[string]int))) //6
+	fmt.Println(gridTravellermemo(1, 1, make(map[string]int))) //1
+	fmt.Println(gridTravellermemo(2, 3, make(map[string]int))) //3
+	fmt.Println(gridTravellermemo(3, 2, make(map[string]int))) //3
+	fmt.Println(gridTravellermemo(3, 3, make(map[string]int))) //6
 
-	fmt.Println(gridTravellermemo(18, 18,make(map[string]int))) //2333606220
-
+	fmt.Println(gridTravellermemo(18, 18, make(map[string]int))) //2333606220
 
 	fmt.Println(gridTraveller(1, 1)) //1
 	fmt.Println(gridTraveller(2, 3)) //3
@@ -77,4 +76,59 @@ func gridTravellermemo(n, m int, memo map[string]int) int {
 	memo[key] = gridTravellermemo(n-1, m, memo) + gridTravellermemo(n, m-1, memo)
 	return memo[key]
 
+}
+
+func TestCanSum(t *testing.T) {
+
+	fmt.Println(canSummemo(7, []int{2, 3},make(map[int]bool)))
+	fmt.Println(canSummemo(7, []int{5, 3, 4, 7},make(map[int]bool)))
+	fmt.Println(canSummemo(7, []int{2, 4},make(map[int]bool)))
+	fmt.Println(canSummemo(300, []int{7, 14},make(map[int]bool)))
+
+	fmt.Println(canSum(7, []int{2, 3}))
+	fmt.Println(canSum(7, []int{5, 3, 4, 7}))
+	fmt.Println(canSum(7, []int{2, 4}))
+	fmt.Println(canSum(300, []int{7, 14}))
+
+}
+func canSum(target int, arr []int) bool {
+	if target == 0 {
+		return true
+	}
+	if target < 0 {
+		return false
+	}
+
+	for i := 0; i < len(arr); i++ {
+		remainder:=target-arr[i]
+		if canSum(remainder, arr) == true {
+			return true
+		}
+	}
+	return false
+}
+func canSummemo(target int, arr []int,memo map[int]bool)bool{
+
+	if val,found:=memo[target];found{
+		return val
+	}
+
+	if target==0{
+		return true
+	}
+	if target<0{
+		return false
+	}
+	
+
+	for i:=0;i<len(arr);i++{
+		remainder:=target-arr[i]
+		if canSummemo(remainder,arr,memo){
+			memo[target]=true
+			return true
+		}
+	}
+
+	memo[target]=false
+	return memo[target]
 }
