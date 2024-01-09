@@ -100,30 +100,30 @@ func (this *XLinkedList) Remove(val int) {
 	}
 
 }
-func merge02(nums1 []int, m int, nums2 []int, n int){
-	i:=m-1
-	k:=n-1
-	diff:=len(nums1)-m
-	ln:=len(nums1)-1
-	
-	for counter:=0; counter<diff;{
-		if(nums1[i]>nums2[k]){
-			nums1[ln]=nums1[i]
+func merge02(nums1 []int, m int, nums2 []int, n int) {
+	i := m - 1
+	k := n - 1
+	diff := len(nums1) - m
+	ln := len(nums1) - 1
+
+	for counter := 0; counter < diff; {
+		if nums1[i] > nums2[k] {
+			nums1[ln] = nums1[i]
 			ln--
 			i--
-		}else{
-			nums1[ln]=nums2[k]
+		} else {
+			nums1[ln] = nums2[k]
 			k--
 			ln--
 		}
 	}
 	//remaining
-	for ; i	>0;i--{
-		nums1[ln]=nums1[i]
+	for ; i > 0; i-- {
+		nums1[ln] = nums1[i]
 		ln--
 	}
-	for ; k>0;k--{
-		nums1[ln]=nums2[k]
+	for ; k > 0; k-- {
+		nums1[ln] = nums2[k]
 		ln--
 	}
 }
@@ -136,11 +136,11 @@ func TestMergeArrays(t *testing.T) {
 	merge02(nums1, m, nums2, n)
 
 	nums11 := []int{1}
-	m1:= 1
-	nums22:= []int{}
-	n1:= 0
+	m1 := 1
+	nums22 := []int{}
+	n1 := 0
 	// merge(nums11,m1,nums22,n1)
-	merge02(nums11,m1,nums22,n1)
+	merge02(nums11, m1, nums22, n1)
 }
 
 /*
@@ -186,3 +186,19 @@ func merge(nums1 []int, m int, nums2 []int, n int) {
 
 }
 
+func moveZerosToend(arr []int) {
+	lastZeroFoundAt := 0
+	for i := range arr {
+		if arr[i] != 0 {
+			arr[lastZeroFoundAt], arr[i] = arr[i], arr[lastZeroFoundAt]
+			lastZeroFoundAt++
+		}
+	}
+}
+func TestMoveZ(t *testing.T) {
+	a := []int{0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 0}
+	fmt.Println("Original array:", a)
+
+	moveZerosToend(a)
+	fmt.Println("Array after moving zeros to the end:", a)
+}
