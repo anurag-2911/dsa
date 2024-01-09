@@ -2,6 +2,7 @@ package gobasics
 
 import (
 	"fmt"
+	"hash/fnv"
 	"testing"
 )
 
@@ -80,10 +81,10 @@ func gridTravellermemo(n, m int, memo map[string]int) int {
 
 func TestCanSum(t *testing.T) {
 
-	fmt.Println(canSummemo(7, []int{2, 3},make(map[int]bool)))
-	fmt.Println(canSummemo(7, []int{5, 3, 4, 7},make(map[int]bool)))
-	fmt.Println(canSummemo(7, []int{2, 4},make(map[int]bool)))
-	fmt.Println(canSummemo(300, []int{7, 14},make(map[int]bool)))
+	fmt.Println(canSummemo(7, []int{2, 3}, make(map[int]bool)))
+	fmt.Println(canSummemo(7, []int{5, 3, 4, 7}, make(map[int]bool)))
+	fmt.Println(canSummemo(7, []int{2, 4}, make(map[int]bool)))
+	fmt.Println(canSummemo(300, []int{7, 14}, make(map[int]bool)))
 
 	fmt.Println(canSum(7, []int{2, 3}))
 	fmt.Println(canSum(7, []int{5, 3, 4, 7}))
@@ -91,6 +92,9 @@ func TestCanSum(t *testing.T) {
 	fmt.Println(canSum(300, []int{7, 14}))
 
 }
+
+// can sum to a target problem
+
 func canSum(target int, arr []int) bool {
 	if target == 0 {
 		return true
@@ -100,35 +104,225 @@ func canSum(target int, arr []int) bool {
 	}
 
 	for i := 0; i < len(arr); i++ {
-		remainder:=target-arr[i]
+		remainder := target - arr[i]
 		if canSum(remainder, arr) == true {
 			return true
 		}
 	}
 	return false
 }
-func canSummemo(target int, arr []int,memo map[int]bool)bool{
+func canSummemo(target int, arr []int, memo map[int]bool) bool {
 
-	if val,found:=memo[target];found{
+	if val, found := memo[target]; found {
 		return val
 	}
 
-	if target==0{
+	if target == 0 {
 		return true
 	}
-	if target<0{
+	if target < 0 {
 		return false
 	}
-	
 
-	for i:=0;i<len(arr);i++{
-		remainder:=target-arr[i]
-		if canSummemo(remainder,arr,memo){
-			memo[target]=true
+	for i := 0; i < len(arr); i++ {
+		remainder := target - arr[i]
+		if canSummemo(remainder, arr, memo) {
+			memo[target] = true
 			return true
 		}
 	}
 
-	memo[target]=false
+	memo[target] = false
 	return memo[target]
+}
+
+func TestHowSum(t *testing.T) {
+	fmt.Println(howSum(7, []int{2, 3}))
+	fmt.Println(howSum(7, []int{5, 3, 4, 7}))
+	fmt.Println(howSum(7, []int{2, 4}))
+	fmt.Println(howSum(300, []int{7, 14}))
+}
+func howSum(target int, arr []int) []int {
+	if target == 0 {
+		return []int{}
+	}
+	if target < 0 {
+		return nil
+	}
+
+	for _, val := range arr {
+		remainder := target - val
+		remainderResult := howSum(remainder, arr)
+		if remainderResult != nil {
+			return append(remainderResult, val)
+		}
+	}
+
+	return nil
+}
+
+func howSummemo(target int, arr []int, memo map[int][]int) []int {
+	if val, found := memo[target]; found {
+		if val != nil {
+			return append([]int(nil), val...)
+		}
+		return nil
+	}
+	if target == 0 {
+		return []int{}
+	}
+	if target < 0 {
+		return nil
+	}
+
+	for _, val := range arr {
+		remainder := target - val
+		remainderResult := howSummemo(remainder, arr, memo)
+		if remainderResult != nil {
+			result := append(remainderResult, val)
+			memo[target] = result
+			return result
+		}
+	}
+	return nil
+}
+
+func TestMaxSubArray(t *testing.T) {
+	nums := []int{-2, 1, -3, 4, -1, 2, 1, -5, 4}
+	result := maxSubArray(nums)
+	fmt.Println("Maximum Subarray Sum:", result) // Output: 6
+}
+func maxSubArray(nums []int) int {
+	maxSoFar := nums[0]
+	maxEndingHere := nums[0]
+
+	for i := 1; i < len(nums); i++ {
+		// Calculate max subarray sum ending at index i
+		current := nums[i]
+		maxEndingHere = max(current, maxEndingHere+nums[i])
+
+		// Update max so far if needed
+		maxSoFar = max(maxSoFar, maxEndingHere)
+	}
+
+	return maxSoFar
+}
+func max(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func TestTypeAssertion(t *testing.T) {
+	var g Gen = "Hallo"
+
+	if val, ok := g.(string); ok {
+		fmt.Println(val)
+	}
+	if val, ok := g.(int); ok {
+		fmt.Println(val)
+	}
+	var x interface{} = 1234
+
+	if val, ok := x.(int); ok {
+		fmt.Println(val)
+	}
+	if val, ok := x.(string); ok {
+		fmt.Println(val)
+	}
+
+}
+
+type Gen interface{}
+
+func TestVariadicFunctions(t *testing.T) {
+	fmt.Println(sumup(1, 2))
+	fmt.Println(sumup(10, 2, 1, 2))
+}
+func sumup(nums ...int) int {
+	sum := 0
+	for _, val := range nums {
+		sum = sum + val
+	}
+	return sum
+}
+
+func TestHashTable(t *testing.T) {
+	ht := NewHashTable(10)
+	ht.Put("name", "John Doe")
+	ht.Put("age", 30)
+
+	if name, ok := ht.Get("name"); ok {
+		fmt.Println("Name:", name)
+	}
+
+	if age, ok := ht.Get("age"); ok {
+		fmt.Println("Age:", age)
+	}
+
+	ht.Remove("name")
+	if name, ok := ht.Get("name"); !ok {
+		fmt.Println("Name not found", name)
+	}
+}
+
+type KeyValue struct {
+	Key   string
+	Value interface{}
+}
+
+type HashTable struct {
+	buckets [][]KeyValue
+	size    int
+}
+
+func NewHashTable(size int) *HashTable {
+	return &HashTable{
+		buckets: make([][]KeyValue, size),
+		size:    size,
+	}
+}
+func (h *HashTable) hash(key string) int {
+	hasher := fnv.New32a()
+	hasher.Write([]byte(key))
+	return int(hasher.Sum32()) % h.size
+}
+
+func (h *HashTable) Put(key string, value interface{}) {
+	index := h.hash(key)
+	bucket := h.buckets[index]
+
+	for i, keyvalue := range bucket {
+		if keyvalue.Key == key {
+			h.buckets[index][i].Value = value
+			return
+		}
+	}
+	h.buckets[index] = append(bucket, KeyValue{Key: key, Value: value})
+}
+func (h *HashTable) Get(key string) (interface{}, bool) {
+	index := h.hash(key)
+	bucket := h.buckets[index]
+
+	for _, kv := range bucket {
+		if kv.Key == key {
+			return kv.Value, true
+		}
+	}
+	return nil, false
+}
+func (h *HashTable) Remove(key string) {
+	index := h.hash(key)
+	bucket := h.buckets[index]
+	for i, kv := range bucket {
+		if kv.Key == key {
+			h.buckets[index] = append(bucket[:i], bucket[i+1:]...)
+			return
+		}
+	}
+}
+
+func TestRateLimiter(t *testing.T){
+	
 }
