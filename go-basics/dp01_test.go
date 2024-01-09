@@ -3,7 +3,9 @@ package gobasics
 import (
 	"fmt"
 	"hash/fnv"
+	"sort"
 	"testing"
+	"time"
 )
 
 func TestY(t *testing.T) {
@@ -323,6 +325,84 @@ func (h *HashTable) Remove(key string) {
 	}
 }
 
-func TestRateLimiter(t *testing.T){
-	
+func TestRateLimiter(t *testing.T) {
+	action := func() {
+		fmt.Println("action run at ", time.Now())
+	}
+	limiter := NewRateLimiter(5 * time.Second)
+	limiter.Start(action)
+
+	time.Sleep(30 * time.Second)
+	limiter.Stop()
+
+	fmt.Println("all done")
+}
+
+type RateLimiter struct {
+	interval time.Duration
+	ticker   *time.Ticker
+	quit     chan struct{}
+}
+
+func NewRateLimiter(interval time.Duration) *RateLimiter {
+	return &RateLimiter{
+		interval: interval,
+		ticker:   time.NewTicker(interval),
+		quit:     make(chan struct{}),
+	}
+}
+func (r *RateLimiter) Start(action func()) {
+	go func() {
+		for {
+			select {
+			case <-r.ticker.C:
+				{
+					action()
+				}
+			case <-r.quit:
+				{
+					r.ticker.Stop()
+				}
+			}
+		}
+	}()
+}
+func (r *RateLimiter) Stop() {
+	close(r.quit)
+}
+
+func TestSort(t *testing.T){
+	arr:=[]int{23,4,1,67,4}
+	sort.Ints(arr)
+	fmt.Println(arr)
+	str:=[]string{"s","a","y"}
+	sort.Strings(str)
+	fmt.Println(str)
+	people := []Person{
+        {"Bob", 31},
+        {"John", 42},
+        {"Michael", 17},
+        {"Jenny", 26},
+    }
+	sort.Sort(ByAge(people))
+	fmt.Println(people)
+
+}
+
+type Person struct{
+	Name string
+	Age int
+}
+
+type ByAge []Person
+
+func(a ByAge)Len()int{
+	return len(a)
+}
+func(a ByAge)Less(i,j int)bool{
+	return a[i].Age<a[j].Age
+}
+func(a ByAge)Swap(i,j int){
+	a[i],a[j]=a[j],a[i]
+
 }
