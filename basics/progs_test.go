@@ -148,11 +148,11 @@ func (q *XQueue) Dequeue() (int, error) {
 	q.items = items
 	return item, nil
 }
-func(q *XQueue)Peek()(int,error){
-	if len(q.items)==0{
+func (q *XQueue) Peek() (int, error) {
+	if len(q.items) == 0 {
 		return 0, fmt.Errorf("empty queue")
 	}
-	return q.items[0],nil
+	return q.items[0], nil
 }
 func TestQ(t *testing.T) {
 	queue := &XQueue{
@@ -164,4 +164,88 @@ func TestQ(t *testing.T) {
 	queue.Enqueue(104)
 	fmt.Println(queue.Dequeue())
 	fmt.Println(queue.Peek())
+}
+
+/*
+LinkedList
+*/
+type YNode struct {
+	item int
+	next *YNode
+}
+type YLinkedList struct {
+	head *YNode
+}
+
+func (list *YLinkedList) Insert(item int) {
+	node := &YNode{
+		item: item,
+	}
+	if list.head == nil {
+		list.head = node
+		return
+	}
+	current := list.head
+	for current.next != nil {
+		current = current.next
+	}
+	current.next = node
+
+}
+func (list *YLinkedList) Traverse() {
+	current := list.head
+	if current == nil {
+		return
+	}
+	for current != nil {
+		fmt.Print(current.item)
+		fmt.Print(">")
+		current = current.next
+	}
+}
+func (list *YLinkedList) Remove(item int) {
+	current := list.head
+	if current == nil {
+		return
+	}
+	if list.head.item == item {
+		list.head = list.head.next
+		return
+	}
+	prev := current
+	for current.next != nil {
+
+		if current.item == item {
+			prev.next = current.next
+			return
+		}
+		prev = current
+		current = current.next
+	}
+	if current.item == item {
+		prev.next = nil
+		return
+	}
+}
+func TestLL(t *testing.T) {
+	linkedlist := &YLinkedList{}
+	linkedlist.Insert(1000)
+	linkedlist.Insert(2000)
+	linkedlist.Insert(3000)
+	linkedlist.Insert(4000)
+	linkedlist.Insert(5000)
+	linkedlist.Insert(6000)
+
+	linkedlist.Traverse()
+	fmt.Println()
+	linkedlist.Remove(2000)
+	linkedlist.Traverse()
+	fmt.Println()
+	linkedlist.Remove(1000)
+	linkedlist.Traverse()
+	fmt.Println()
+	linkedlist.Remove(6000)
+	linkedlist.Traverse()
+	fmt.Println()
+	linkedlist.Remove(8000)
 }
