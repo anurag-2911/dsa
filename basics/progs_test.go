@@ -250,4 +250,107 @@ func TestLL(t *testing.T) {
 	linkedlist.Remove(8000)
 }
 
+/*
+Double linked list
+*/
+type DNode struct {
+	data       int
+	next, prev *DNode
+}
+type XDoubleLinkedList struct {
+	head, tail *DNode
+}
 
+func (dll *XDoubleLinkedList) Insert(data int) {
+	node := &DNode{
+		data: data,
+	}
+	if dll.head == nil {
+		dll.head = node
+		dll.tail = node
+		return
+	}
+	current := dll.head
+	for current.next != nil {
+		current = current.next
+	}
+	current.next = node
+	node.prev = current
+	dll.tail = node
+
+}
+func (dll *XDoubleLinkedList) Traverse() {
+	current := dll.head
+	if current == nil {
+		return
+	}
+	for current != nil {
+		fmt.Print(current.data)
+		fmt.Print("  ")
+		current = current.next
+	}
+	fmt.Println()
+}
+func (dll *XDoubleLinkedList) TraverseReverse() {
+	current := dll.tail
+	if current == nil {
+		return
+	}
+	for current != nil {
+		fmt.Print(current.data)
+		fmt.Print("  ")
+		current = current.prev
+	}
+	fmt.Println()
+}
+func (dll *XDoubleLinkedList) Delete(data int) {
+	current := dll.head
+	if current.data == data { // if the first node itself
+		dll.head = dll.head.next
+		dll.head.prev = nil
+
+		return
+	}
+	if dll.tail.data == data { // if the last node
+		prev := dll.tail.prev
+		prev.next = nil
+		dll.tail = prev
+		return
+	}
+
+	for current != nil {
+		if current.data == data {
+			current.next.prev = current.prev
+			current.prev.next = current.next
+			return
+		}
+
+		current = current.next
+	}
+
+}
+func TestDoubleLinkedList(t *testing.T) {
+	dll := &XDoubleLinkedList{}
+	dll.Insert(1000)
+	dll.Insert(2000)
+	dll.Insert(3000)
+	dll.Insert(4000)
+	dll.Insert(5000)
+	traversex(dll)
+	dll.Delete(1000)
+	traversex(dll)
+	dll.Delete(5000)
+	traversex(dll)
+	dll.Insert(6000)
+	dll.Insert(7000)
+	dll.Insert(8000)
+	traversex(dll)
+	dll.Delete(6000)
+	traversex(dll)
+
+}
+
+func traversex(dll *XDoubleLinkedList) {
+	dll.Traverse()
+	dll.TraverseReverse()
+}
