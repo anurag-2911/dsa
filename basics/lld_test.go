@@ -76,54 +76,148 @@ func TestShortURLSvc(t *testing.T) {
 // LRU cache
 
 /*
-double linked list, elements are added to the front, when read they are deleted from the current position
+double linked list, elements are added to the front,
+when read they are deleted from the current position
 and added to the front
 when adding if capacity is reached last element is removed
 */
-type XNode struct {
-	next, prev *XNode
+
+type LRUNode struct {
 	key, value int
-}
-type XLRUCache struct {
-	head, tail *XNode
-	lrucache   map[int]*XNode
-	capacity   int
+	prev, next *LRUNode
 }
 
-func NewLRUCache(cap int) *XLRUCache {
-	return &XLRUCache{
-		lrucache: make(map[int]*XNode),
-		capacity: cap,
+type LRUCache struct {
+	capacity   int
+	items      map[int]*LRUNode
+	head, tail *LRUNode
+}
+
+func NewLRUCache(capacity int) *LRUCache {
+	return &LRUCache{
+		capacity: capacity,
+		items:    make(map[int]*LRUNode),
 	}
 }
-func (lru *XLRUCache) Add(newNode *XNode) {
+func (lru *LRUCache) addToFront(node *LRUNode) {
 	if lru.head == nil {
-		lru.head = newNode
-		lru.tail = newNode
+		lru.head = node
+		lru.tail = node
+		return
+	}
+	node.next = lru.head
+	lru.head.prev = node
+	lru.head = node
+}
+func (lru *LRUCache) deletelastNode() {
+	if lru.tail == nil {
+		return
+	}
+	prev := lru.tail.prev
+	prev.next = nil
+	lru.tail = prev
+}
+func (lru *LRUCache) deletespecificNode(node *LRUNode) {
+	// if the head node
+	if lru.head.key == node.key {
+		node.prev = nil
+		lru.head = node.next
+		node.next.prev = nil
+		return
+	}
+	// if the tail node
+	if lru.tail.key == node.key {
+		prev := lru.tail.prev
+		prev.next = nil
+		lru.tail = prev
+		return
+	}
+	// rest of the cases
+	current := lru.head
+	for current != nil {
+		if current.key == node.key {
+			current.next.prev = current.prev
+			current.prev.next = current.next
+			return
+		}
+		current = current.next
+	}
+
+}
+func (lru *LRUCache) traverse() {
+	if lru.head == nil {
 		return
 	}
 	current := lru.head
-	newNode.next = current
+	for current != nil {
+		fmt.Print(current.value)
+		fmt.Print("  ")
+		current = current.next
+	}
+	fmt.Println()
+}
+func (lru *LRUCache) Get(key int) (int, bool) {
+	if node, found := lru.items[key]; found {
+		lru.deletespecificNode(node)
+		lru.addToFront(node)
+		return node.value, true
+	}
+	return -1, false
+}
+func (lru *LRUCache) Put(key, value int) {
+	if node, found := lru.items[key]; found {
+		node.value = value
+		lru.deletespecificNode(node)
+		lru.addToFront(node)
+		return
+	}
+	node := &LRUNode{
+		key:   key,
+		value: value,
+	}
+	lru.items[key] = node
+	lru.addToFront(node)
+
+	if len(lru.items) > lru.capacity {
+		lru.deletelastNode()
+		delete(lru.items, key)
+
+	}
 
 }
-
 func TestLRUCache(t *testing.T) {
-	lrucache := NewLRUCache(10)
-	node1 := &XNode{
-		key:   1,
-		value: 101,
-	}
-	node2 := &XNode{
-		key:   2,
-		value: 102,
-	}
-	node3 := &XNode{
-		key:   3,
-		value: 103,
-	}
-	lrucache.Add(node1)
-	lrucache.Add(node2)
-	lrucache.Add(node3)
+	lrucache:=NewLRUCache(5)
+	lrucache.Put(101,1001)
+	lrucache.Put(102,1002)
+	lrucache.Put(103,1003)
+	lrucache.Put(104,1004)
+	lrucache.Put(105,1005)
+	lrucache.Put(106,1006)
+	lrucache.traverse()
+	// lru.deletelastNode()
+	// newFunction()
+}
+
+func newFunction() {
+	node1 := &LRUNode{key: 101, value: 1001}
+	node2 := &LRUNode{key: 102, value: 1002}
+	node3 := &LRUNode{key: 103, value: 1003}
+	node4 := &LRUNode{key: 104, value: 1004}
+	node5 := &LRUNode{key: 105, value: 1005}
+	node6 := &LRUNode{key: 106, value: 1006}
+
+	lru := NewLRUCache(5)
+	lru.addToFront(node1)
+	lru.addToFront(node2)
+	lru.addToFront(node3)
+	lru.addToFront(node4)
+	lru.addToFront(node5)
+	lru.addToFront(node6)
+	lru.traverse()
+
+	lru.traverse()
+	lru.deletespecificNode(node4)
+	lru.traverse()
 }
 
 // end of LRU cache
