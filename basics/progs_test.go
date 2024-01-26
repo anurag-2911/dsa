@@ -2,6 +2,7 @@ package basics
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -354,3 +355,76 @@ func traversex(dll *XDoubleLinkedList) {
 	dll.Traverse()
 	dll.TraverseReverse()
 }
+
+//end of double linked list
+
+/*
+strings problems
+string reversal
+*/
+func strrev(str string)string{
+	r:=make([]rune,0)
+	for i:=len(str)-1;i>=0;i--{
+		r=append(r, rune(str[i]))
+	}
+	return string(r)
+}
+func strrev01(str string)string{
+	r:=[]rune(str)
+	for i,j:=0,len(str)-1;i<j;i,j=i+1,j-1{
+		r[i],r[j]=r[j],r[i]
+	}
+	return string(r)
+}
+func TestStringReverse(t *testing.T){
+	fmt.Println(strrev("hallo"))
+	fmt.Println(strrev01("hallo"))
+}
+func palin(str string)bool{
+	r:=[]rune(str)
+	for i,j:=0,len(str)-1;i<j;i,j=i+1,j-1{
+		if r[i]!=r[j]{
+			return false
+		}
+	}
+	return true
+}
+func TestPalin(t *testing.T){
+	fmt.Println(palin("racecar"))
+	fmt.Println(palin("sidecar"))
+	fmt.Println(palin("raccar"))
+	fmt.Println(palin("racxxar"))
+}
+
+func isAnagram(str1,str2 string)bool{
+	lstr1:=strings.ToLower(str1)
+	lstr2:=strings.ToLower(str2)
+	if len(str1)!=len(str2){
+		return false
+	}
+	frequency:=make(map[rune]int)
+	for _,v:=range lstr1{
+		frequency[v]++
+	}
+	for _,v:=range lstr2{
+		frequency[v]--
+		if frequency[v]<0{
+			return false
+		}
+	}
+	return true
+}
+func TestAnagram(t *testing.T){
+	fmt.Println(isAnagram("Listen", "Silent"))   // Should return true
+    fmt.Println(isAnagram("Triangle", "Integral")) // Should return true
+    fmt.Println(isAnagram("Hello", "World")) //false
+}
+func TestLongestSubstringWithoutRepeatingCharacters(t *testing.T){
+	//abcabcbb
+}
+func longestsubstringwithoutrepeatingcharacters(str string)int{
+	return 0
+
+}
+
+//end if strings problems
