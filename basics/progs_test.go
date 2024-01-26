@@ -249,3 +249,5 @@ func TestLL(t *testing.T) {
 	fmt.Println()
 	linkedlist.Remove(8000)
 }
+
+
