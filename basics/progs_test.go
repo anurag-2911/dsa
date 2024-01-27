@@ -2,6 +2,7 @@ package basics
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -362,69 +363,161 @@ func traversex(dll *XDoubleLinkedList) {
 strings problems
 string reversal
 */
-func strrev(str string)string{
-	r:=make([]rune,0)
-	for i:=len(str)-1;i>=0;i--{
-		r=append(r, rune(str[i]))
+func strrev(str string) string {
+	r := make([]rune, 0)
+	for i := len(str) - 1; i >= 0; i-- {
+		r = append(r, rune(str[i]))
 	}
 	return string(r)
 }
-func strrev01(str string)string{
-	r:=[]rune(str)
-	for i,j:=0,len(str)-1;i<j;i,j=i+1,j-1{
-		r[i],r[j]=r[j],r[i]
+func strrev01(str string) string {
+	r := []rune(str)
+	for i, j := 0, len(str)-1; i < j; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
 	}
 	return string(r)
 }
-func TestStringReverse(t *testing.T){
+func TestStringReverse(t *testing.T) {
 	fmt.Println(strrev("hallo"))
 	fmt.Println(strrev01("hallo"))
 }
-func palin(str string)bool{
-	r:=[]rune(str)
-	for i,j:=0,len(str)-1;i<j;i,j=i+1,j-1{
-		if r[i]!=r[j]{
+func palin(str string) bool {
+	r := []rune(str)
+	for i, j := 0, len(str)-1; i < j; i, j = i+1, j-1 {
+		if r[i] != r[j] {
 			return false
 		}
 	}
 	return true
 }
-func TestPalin(t *testing.T){
+func TestPalin(t *testing.T) {
 	fmt.Println(palin("racecar"))
 	fmt.Println(palin("sidecar"))
 	fmt.Println(palin("raccar"))
 	fmt.Println(palin("racxxar"))
 }
 
-func isAnagram(str1,str2 string)bool{
-	lstr1:=strings.ToLower(str1)
-	lstr2:=strings.ToLower(str2)
-	if len(str1)!=len(str2){
+func isAnagram(str1, str2 string) bool {
+	lstr1 := strings.ToLower(str1)
+	lstr2 := strings.ToLower(str2)
+	if len(str1) != len(str2) {
 		return false
 	}
-	frequency:=make(map[rune]int)
-	for _,v:=range lstr1{
+	frequency := make(map[rune]int)
+	for _, v := range lstr1 {
 		frequency[v]++
 	}
-	for _,v:=range lstr2{
+	for _, v := range lstr2 {
 		frequency[v]--
-		if frequency[v]<0{
+		if frequency[v] < 0 {
 			return false
 		}
 	}
 	return true
 }
-func TestAnagram(t *testing.T){
-	fmt.Println(isAnagram("Listen", "Silent"))   // Should return true
-    fmt.Println(isAnagram("Triangle", "Integral")) // Should return true
-    fmt.Println(isAnagram("Hello", "World")) //false
+func TestAnagram(t *testing.T) {
+	fmt.Println(isAnagram("Listen", "Silent"))     // Should return true
+	fmt.Println(isAnagram("Triangle", "Integral")) // Should return true
+	fmt.Println(isAnagram("Hello", "World"))       //false
 }
-func TestLongestSubstringWithoutRepeatingCharacters(t *testing.T){
+func TestLongestSubstringWithoutRepeatingCharacters(t *testing.T) {
 	//abcabcbb
 }
-func longestsubstringwithoutrepeatingcharacters(str string)int{
+func longestsubstringwithoutrepeatingcharacters(str string) int {
 	return 0
 
 }
 
 //end if strings problems
+
+/*
+Arrays problems
+
+*/
+
+// array rotation
+type Arrays struct {
+}
+
+var arrays Arrays = Arrays{}
+
+func TestArrays(t *testing.T) {
+	a := Arrays{}
+	got := a.rotate([]int{1, 2, 3, 4, 5}, 2)
+	want := []int{3, 4, 5, 1, 2}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v,want %v", got, want)
+	}
+}
+func (a *Arrays) rotate(arr []int, rotateby int) []int {
+	rotatedarr := make([]int, 0, len(arr))
+	for i := 0; i < len(arr); i++ {
+		index := (i + rotateby) % len(arr)
+		rotatedarr = append(rotatedarr, arr[index])
+	}
+	return rotatedarr
+}
+
+/*
+Find the Missing Number:
+
+Description: You are given an array of n integers from 1 to n+1,
+			 such that all numbers from 1 to n+1 are present except one missing number.
+*/
+
+func TestMissingNumber(t *testing.T) {
+	a := Arrays{}
+	got := a.findMissingnum([]int{1, 2, 3, 4, 6, 7, 8})
+	want := 5
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %d,want %d", got, want)
+	}
+
+}
+func (a *Arrays) findMissingnum(arr []int) int {
+	n := len(arr)
+	total := ((n + 1) * (n + 2)) / 2
+	sum := 0
+	for _, val := range arr {
+		sum = sum + val
+	}
+	return total - sum
+}
+
+/*
+Merge Sorted Arrays:
+
+Description: Write a Go function that merges two sorted arrays into one larger sorted array.
+For example, merging [1, 3, 5] and [2, 4, 6] should yield [1, 2, 3, 4, 5, 6].
+Key Concepts: Two-pointer technique, understanding of sorted data structures.
+*/
+func (a *Arrays) merger(arr1, arr2 []int) []int {
+	resultarray := make([]int, 0, len(arr1)+len(arr2))
+	i, j := 0, 0
+
+	for i < len(arr1) && j < len(arr2) {
+		if arr1[i] < arr2[j] {
+			resultarray = append(resultarray, arr1[i])
+			i++
+		} else {
+			resultarray = append(resultarray, arr2[j])
+			j++
+		}
+	}
+	resultarray = append(resultarray, arr1[i:]...)
+	resultarray = append(resultarray, arr2[j:]...)
+	
+	return resultarray
+}
+func TestMerge(t *testing.T) {
+	a := Arrays{}
+	got := a.merger([]int{1, 3, 5}, []int{2, 4, 6})
+	want := []int{1, 2, 3, 4, 5, 6}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+
+//end of arrays problems
