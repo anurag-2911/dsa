@@ -682,3 +682,85 @@ func (ms *MeetingScheduler) DisplayMeetings() {
 }
 
 //end of the meeting scheduler
+
+/*
+Dynamic programming problem
+CanSum (7,[5,3,4,7]) -> true
+*/
+
+type DP struct{}
+
+func (dp *DP) canSum(target int, arr []int) bool {
+	return canSummemo(target, arr,make(map[int]bool))
+}
+func canSumProblem(target int, arr []int) bool {
+	if target == 0 {
+		return true
+	}
+	if target <= -1 {
+		return false
+	}
+	for _, val := range arr {
+		reducedTarget := target - val
+		if canSumProblem(reducedTarget, arr) {
+			return true
+		}
+	}
+	return false
+}
+func canSummemo(target int, arr []int, memo map[int]bool) bool {
+	if val,found:=memo[target];found{
+		return val
+	}
+	if target == 0 {
+		return true
+	}
+	if target <= -1 {
+		return false
+	}
+	for _, val := range arr {
+		reducedTarget := target - val
+		if canSummemo(reducedTarget, arr, memo) {
+			memo[target] = true
+			return memo[target]
+		}
+	}
+	memo[target] = false
+	return memo[target]
+}
+func TestCanSum(t *testing.T) {
+	dp := &DP{}
+	got := dp.canSum(7, []int{5, 3, 4, 7})
+	want := true
+	if got != want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+	got = dp.canSum(7, []int{2, 3})
+	want = true
+	if got != want {
+		t.Errorf("got %v and want %v", got, want)
+	}
+	got = dp.canSum(7, []int{2, 4})
+	want = false
+	if got != want {
+		t.Errorf("got %v and want %v", got, want)
+	}
+	got = dp.canSum(8, []int{2, 3, 5})
+	want = true
+	if got != want {
+		t.Errorf("got %v and want %v", got, want)
+	}
+	got = dp.canSum(300, []int{7, 14})
+	want = false
+	if got != want {
+		t.Errorf("got %v and want %v", got, want)
+	}
+	got = dp.canSum(3000, []int{7, 14})
+	want = false
+	if got != want {
+		t.Errorf("got %v and want %v", got, want)
+	}
+
+}
+
+//end of CanSum
