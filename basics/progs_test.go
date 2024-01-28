@@ -3,8 +3,10 @@ package basics
 import (
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestXxx(t *testing.T) {
@@ -561,7 +563,7 @@ func (xmap *XMap) hashing(key string) int {
 	return result
 }
 func (xmap *XMap) Put(key, value string) {
-	if key==""{
+	if key == "" {
 		return
 	}
 	index := xmap.hashing(key)
@@ -578,13 +580,13 @@ func (xmap *XMap) Put(key, value string) {
 
 }
 func (xmap *XMap) Get(key string) (string, bool) {
-	index:=xmap.hashing(key)
-	for _,kvp:=range xmap.KV[index]{
-		if kvp.Key==key{
-			return kvp.Value,true
+	index := xmap.hashing(key)
+	for _, kvp := range xmap.KV[index] {
+		if kvp.Key == key {
+			return kvp.Value, true
 		}
 	}
-	return "",false
+	return "", false
 }
 func TestXMap(t *testing.T) {
 	xmap := NewXMap(100)
@@ -594,12 +596,89 @@ func TestXMap(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v and want %v", got, want)
 	}
-	xmap.Put("one","oz")
-	got,_=xmap.Get("one")
-	want="oz"
-	if !reflect.DeepEqual(got,want){
-		t.Errorf("got %v and want %v",got,want)
+	xmap.Put("one", "oz")
+	got, _ = xmap.Get("one")
+	want = "oz"
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v and want %v", got, want)
 	}
 }
 
 //end of hashtable
+
+/*
+Meeting scheduler
+simple program that manages meeting time slots
+*/
+type Meeting struct {
+	StartTime time.Time
+	EndTime   time.Time
+}
+type MeetingScheduler struct {
+	Meetings []Meeting
+}
+
+func (ms *MeetingScheduler) AddMeeting(newMeeting Meeting) bool {
+	for _, m := range ms.Meetings {
+		isinbetween := newMeeting.StartTime.Before(m.EndTime) && newMeeting.EndTime.After(m.StartTime)
+		if isinbetween {
+			return false
+		}
+	}
+	ms.Meetings = append(ms.Meetings, newMeeting)
+	return true
+}
+func (ms *MeetingScheduler) SortMeetings() {
+	sort.Slice(ms.Meetings, func(i, j int) bool {
+		return ms.Meetings[i].StartTime.Before(ms.Meetings[j].StartTime)
+	})
+}
+func TestMeetingScheduler(t *testing.T) {
+	// Test setup
+	layout := "15:04"
+	startTime1, _ := time.Parse(layout, "09:00")
+	endTime1, _ := time.Parse(layout, "10:00")
+	startTime2, _ := time.Parse(layout, "10:30")
+	endTime2, _ := time.Parse(layout, "11:30")
+	startTime3, _ := time.Parse(layout, "10:00")
+	endTime3, _ := time.Parse(layout, "11:00")
+
+	meeting1 := Meeting{StartTime: startTime1, EndTime: endTime1}
+	meeting2 := Meeting{StartTime: startTime2, EndTime: endTime2}
+	meeting3 := Meeting{StartTime: startTime3, EndTime: endTime3}
+
+	scheduler := MeetingScheduler{}
+
+	// Test adding non-overlapping meeting
+	if !scheduler.AddMeeting(meeting1) {
+		t.Errorf("Failed to add non-overlapping meeting1")
+	}
+
+	// Test adding another non-overlapping meeting
+	if !scheduler.AddMeeting(meeting2) {
+		t.Errorf("Failed to add non-overlapping meeting2")
+	}
+
+	// Test adding overlapping meeting
+	if scheduler.AddMeeting(meeting3) {
+		t.Errorf("Incorrectly added overlapping meeting3")
+	}
+
+	// Expected meetings in the scheduler
+	expectedMeetings := []Meeting{meeting1, meeting2}
+	scheduler.SortMeetings()
+
+	// Test if the meetings in the scheduler are as expected
+	if !reflect.DeepEqual(scheduler.Meetings, expectedMeetings) {
+		t.Errorf("Meetings in scheduler are incorrect, got %v, want %v", scheduler.Meetings, expectedMeetings)
+	}
+}
+
+func (ms *MeetingScheduler) DisplayMeetings() {
+	for _, m := range ms.Meetings {
+		fmt.Println(m.StartTime, m.EndTime)
+	}
+	fmt.Println()
+}
+
+//end of the meeting scheduler
