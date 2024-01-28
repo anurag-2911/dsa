@@ -508,7 +508,7 @@ func (a *Arrays) merger(arr1, arr2 []int) []int {
 	}
 	resultarray = append(resultarray, arr1[i:]...)
 	resultarray = append(resultarray, arr2[j:]...)
-	
+
 	return resultarray
 }
 func TestMerge(t *testing.T) {
@@ -520,4 +520,86 @@ func TestMerge(t *testing.T) {
 	}
 }
 
+/*
+Maximum Subarray Sum:
+
+Description: Implement the Kadane's algorithm in Go to find the maximum sum of any contiguous subarray within a given array.
+For example, given [-2, -3, 4, -1, -2, 1, 5, -3], the maximum subarray sum is 7 (from subarray [4, -1, -2, 1, 5]).
+Key Concepts: Dynamic programming, handling of negative numbers.
+*/
+
 //end of arrays problems
+
+/*
+hashtable
+get(key)value
+put(key)
+hashing
+*/
+
+type KeyValue struct {
+	Key   string
+	Value string
+}
+type XMap struct {
+	KV           [][]KeyValue
+	hashingCount int
+}
+
+func NewXMap(hashingcount int) *XMap {
+	return &XMap{
+		KV:           make([][]KeyValue, hashingcount),
+		hashingCount: hashingcount,
+	}
+}
+func (xmap *XMap) hashing(key string) int {
+	sum := 0
+	for _, v := range key {
+		sum = sum + int(v)
+	}
+	result := sum % xmap.hashingCount
+	return result
+}
+func (xmap *XMap) Put(key, value string) {
+	if key==""{
+		return
+	}
+	index := xmap.hashing(key)
+	kv := KeyValue{Key: key, Value: value}
+	// update the value for the key if it alreadu exists
+	for i := range xmap.KV[index] {
+		if xmap.KV[index][i].Key == key {
+			xmap.KV[index][i].Value = value
+			return
+		}
+	}
+	//append a new key value pair if the key doesn't exist
+	xmap.KV[index] = append(xmap.KV[index], kv)
+
+}
+func (xmap *XMap) Get(key string) (string, bool) {
+	index:=xmap.hashing(key)
+	for _,kvp:=range xmap.KV[index]{
+		if kvp.Key==key{
+			return kvp.Value,true
+		}
+	}
+	return "",false
+}
+func TestXMap(t *testing.T) {
+	xmap := NewXMap(100)
+	xmap.Put("one", "uno")
+	got, _ := xmap.Get("one")
+	want := "uno"
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v and want %v", got, want)
+	}
+	xmap.Put("one","oz")
+	got,_=xmap.Get("one")
+	want="oz"
+	if !reflect.DeepEqual(got,want){
+		t.Errorf("got %v and want %v",got,want)
+	}
+}
+
+//end of hashtable
