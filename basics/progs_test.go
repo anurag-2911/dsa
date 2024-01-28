@@ -691,7 +691,7 @@ CanSum (7,[5,3,4,7]) -> true
 type DP struct{}
 
 func (dp *DP) canSum(target int, arr []int) bool {
-	return canSummemo(target, arr,make(map[int]bool))
+	return canSummemo(target, arr, make(map[int]bool))
 }
 func canSumProblem(target int, arr []int) bool {
 	if target == 0 {
@@ -709,7 +709,7 @@ func canSumProblem(target int, arr []int) bool {
 	return false
 }
 func canSummemo(target int, arr []int, memo map[int]bool) bool {
-	if val,found:=memo[target];found{
+	if val, found := memo[target]; found {
 		return val
 	}
 	if target == 0 {
@@ -764,3 +764,75 @@ func TestCanSum(t *testing.T) {
 }
 
 //end of CanSum
+
+/*
+Maximum Subarray Sum:
+
+Description: Implement the Kadane's algorithm in Go to find the maximum sum of any contiguous subarray
+within a given array. For example, given [-2, -3, 4, -1, -2, 1, 5, -3],
+the maximum subarray sum is 7 (from subarray [4, -1, -2, 1, 5]).
+Key Concepts: Dynamic programming, handling of negative numbers.
+*/
+
+func (dp *DP) maxSubArraySum(arr []int) int {
+	maxSoFar := arr[0]
+	maxEndingHere := arr[0]
+	for i := 1; i < len(arr); i++ {
+		maxEndingHere = dp.max(arr[i], maxEndingHere+arr[i])
+		maxSoFar = dp.max(maxSoFar, maxEndingHere)
+	}
+
+	return maxSoFar
+}
+func (dp *DP) max(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func TestMaxSumOfSubArray(t *testing.T) {
+	dp := &DP{}
+	arr := []int{-2, -3, 4, -1, -2, 1, 5, -3}
+	got := dp.maxSubArraySum(arr)
+	want := 7
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v and want %v", got, want)
+	}
+}
+
+//end of max sum of subarray: Kadane's algo
+
+/*
+Check if Array Is a Subset of Another Array:
+
+Description: Write a Go function that checks if one array is a subset of another array.
+For instance, [2, 4, 3] is a subset of [1, 2, 3, 4, 5], but [2, 6] is not.
+Key Concepts: Hashing or two-pointer technique, understanding of set operations.
+*/
+
+func isSubsetArray(arr []int, subarr []int) bool {
+	set:=make(map[int]bool)
+	for _,v:=range arr{
+		set[v]=true
+	}
+	for _,v:=range subarr{
+		if set[v]!=true{
+			return false
+		}
+	}
+	return true	
+}
+func TestIsSubsetOfArray(t *testing.T) {
+	got:=isSubsetArray([]int{1, 2, 3, 4, 5},[]int{2,4,3})
+	want:=true
+	if !reflect.DeepEqual(got,want){
+		t.Errorf("got %v,want %v",got,want)
+	}
+	got=isSubsetArray([]int{1,2,3,4,5},[]int{2,6})
+	want=false
+	if !reflect.DeepEqual(got,want){
+		t.Errorf("got %v and want %v",got,want)
+	}
+}
+// end of subset array of an array program

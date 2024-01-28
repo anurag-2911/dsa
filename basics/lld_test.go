@@ -186,13 +186,13 @@ func (lru *LRUCache) Put(key, value int) {
 
 }
 func TestLRUCache(t *testing.T) {
-	lrucache:=NewLRUCache(5)
-	lrucache.Put(101,1001)
-	lrucache.Put(102,1002)
-	lrucache.Put(103,1003)
-	lrucache.Put(104,1004)
-	lrucache.Put(105,1005)
-	lrucache.Put(106,1006)
+	lrucache := NewLRUCache(5)
+	lrucache.Put(101, 1001)
+	lrucache.Put(102, 1002)
+	lrucache.Put(103, 1003)
+	lrucache.Put(104, 1004)
+	lrucache.Put(105, 1005)
+	lrucache.Put(106, 1006)
 	lrucache.traverse()
 	// lru.deletelastNode()
 	// newFunction()
@@ -284,4 +284,40 @@ func TestRateLimiter(t *testing.T) {
 
 //end of rate limiter
 
+/*
+Basic Rate limiter using a ticker
+*/
 
+type RateL struct{}
+
+func (rl *RateL) ratelimit() {
+	ratelimiter := time.NewTicker(1 * time.Second)
+	defer ratelimiter.Stop()
+	done := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-ratelimiter.C:
+				{
+					doSomeAction()
+				}
+			case <-done:
+				{
+					fmt.Println("exiting rate limiter")
+					return
+				}
+			}
+		}
+	}()
+	time.Sleep(10*time.Second)
+	done <- true
+}
+func doSomeAction() {
+	time.Sleep(time.Second)
+	fmt.Println("done at ", time.Now())
+}
+func TestRateLimit(t *testing.T) {
+	rl := &RateL{}
+	rl.ratelimit()
+}
