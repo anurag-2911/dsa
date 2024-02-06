@@ -163,20 +163,126 @@ while the other goroutine (the consumer) receives data from the channel and proc
 
 func TestProdCons(t *testing.T) {
 	pc := ProdCons{}
-	ch:=make(chan int)
-	go pc.produce(ch)
-	go pc.consume(ch)
-	time.Sleep(time.Second)
+	ch := make(chan int)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pc.produce(ch, 5)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		pc.consume(ch)
+	}()
+	wg.Wait()
 	fmt.Println(" all tasks done")
 }
 
 type ProdCons struct{}
 
-func (pc *ProdCons) produce(ch chan int) {
-	ch <- rand.Intn(100)
+func (pc *ProdCons) produce(ch chan int, count int) {
+	rand.Seed(50)
+	for i := 0; i < count; i++ {
+		val := rand.Intn(100)
+		fmt.Print(val)
+		fmt.Print(" ")
+		ch <- val
+
+	}
 	close(ch)
 }
 func (pc *ProdCons) consume(ch chan int) {
-	fmt.Print(<-ch)
-	fmt.Print()
+	result := 0
+	for val := range ch {
+		result = result + val
+	}
+	fmt.Println("result is ", result)
 }
+
+/*
+Multiplexing Channel Inputs:
+
+Write a program that starts several goroutines, each sending a sequence of numbers on its own channel.
+Use a select statement to multiplex the channel inputs and process the numbers as they arrive from any goroutine.
+
+*/
+
+type MuxChan struct{}
+
+func TestMultiChan(t *testing.T) {
+	var mx = MuxChan{}
+	mx.processSeqOfNum()
+}
+func (mx *MuxChan) processSeqOfNum() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+	ch3 := make(chan int)
+	go func() {
+		for i := 0; i < 2; i++ {
+			val := rand.Intn(20)
+			ch1 <- val
+		}
+		close(ch1)
+	}()
+	go func() {
+		for i := 0; i < 2; i++ {
+			val := rand.Intn(20)
+			ch2 <- val
+		}
+		close(ch2)
+	}()
+	go func() {
+		for i := 0; i < 2; i++ {
+			val := rand.Intn(20)
+			ch3 <- val
+		}
+		close(ch3)
+	}()
+
+	closedChannel := 0
+	for {
+		if closedChannel == 3 {
+			break
+		}
+		select {
+		case val, ok := <-ch1:
+			if ok {
+				fmt.Printf(" ch1:%d ", val)
+			} else {
+				fmt.Println("ch1 closed")
+				closedChannel++
+				ch1 = nil
+			}
+		case val, ok := <-ch2:
+			if ok {
+				fmt.Printf(" ch2:%d ", val)
+			} else {
+				fmt.Println("ch2 closed")
+				closedChannel++
+				ch2 = nil
+			}
+
+		case val, ok := <-ch3:
+			if ok {
+				fmt.Printf(" ch3:%d ", val)
+			} else {
+				fmt.Println("ch3 closed")
+				closedChannel++
+				ch3 = nil
+			}
+		}
+
+	}
+	fmt.Println("all done")
+}
+
+/*
+Dining Philosophers Problem:
+
+Solve the Dining Philosophers problem using goroutines and channels. 
+This classic concurrency problem involves a certain number of philosophers 
+who do nothing but think and eat, competing for a limited number of resources (forks).
+
+*/
