@@ -281,8 +281,31 @@ func (mx *MuxChan) processSeqOfNum() {
 /*
 Dining Philosophers Problem:
 
-Solve the Dining Philosophers problem using goroutines and channels. 
-This classic concurrency problem involves a certain number of philosophers 
+Solve the Dining Philosophers problem using goroutines and channels.
+This classic concurrency problem involves a certain number of philosophers
 who do nothing but think and eat, competing for a limited number of resources (forks).
 
 */
+
+type DiningPhilosophers struct {
+	fork         int
+	philosophers int
+}
+
+func NewDiningPhilosophers(fork int, philosophers int) DiningPhilosophers {
+	return DiningPhilosophers{fork: fork, philosophers: philosophers}
+}
+func TestDiningP(t *testing.T){
+	forks:=5
+	dining:=NewDiningPhilosophers(5,9)
+	buffer:=make(chan int,forks)
+	go dining.eat(buffer)
+	go dining.think(buffer)
+
+}
+func(dp *DiningPhilosophers)eat(ch chan int){
+
+}
+func(dp *DiningPhilosophers)think(ch chan int){
+
+}

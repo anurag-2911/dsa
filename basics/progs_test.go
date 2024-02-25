@@ -812,27 +812,127 @@ Key Concepts: Hashing or two-pointer technique, understanding of set operations.
 */
 
 func isSubsetArray(arr []int, subarr []int) bool {
-	set:=make(map[int]bool)
-	for _,v:=range arr{
-		set[v]=true
+	set := make(map[int]bool)
+	for _, v := range arr {
+		set[v] = true
 	}
-	for _,v:=range subarr{
-		if set[v]!=true{
+	for _, v := range subarr {
+		if set[v] != true {
 			return false
 		}
 	}
-	return true	
+	return true
 }
 func TestIsSubsetOfArray(t *testing.T) {
-	got:=isSubsetArray([]int{1, 2, 3, 4, 5},[]int{2,4,3})
-	want:=true
-	if !reflect.DeepEqual(got,want){
-		t.Errorf("got %v,want %v",got,want)
+	got := isSubsetArray([]int{1, 2, 3, 4, 5}, []int{2, 4, 3})
+	want := true
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v,want %v", got, want)
 	}
-	got=isSubsetArray([]int{1,2,3,4,5},[]int{2,6})
-	want=false
-	if !reflect.DeepEqual(got,want){
-		t.Errorf("got %v and want %v",got,want)
+	got = isSubsetArray([]int{1, 2, 3, 4, 5}, []int{2, 6})
+	want = false
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v and want %v", got, want)
 	}
 }
+
 // end of subset array of an array program
+
+// reverese a linkedList
+
+type ANode struct {
+	Data int
+	Next *ANode
+}
+type ALinkedList struct {
+	Head *ANode
+}
+
+func TestALinkedList(t *testing.T) {
+	node1 := &ANode{Data: 1000}
+	node2 := &ANode{Data: 2000}
+	node3 := &ANode{Data: 3000}
+	node4 := &ANode{Data: 4000}
+	ll := &ALinkedList{}
+	ll.Insert(node1)
+	ll.Insert(node2)
+	ll.Insert(node3)
+	ll.Insert(node4)
+	ll.Traverse()
+	ll.Reverse()
+	ll.Traverse()
+
+}
+func (ll *ALinkedList) Insert(node *ANode) {
+	current := ll.Head
+	if current == nil {
+		ll.Head = node
+		return
+	}
+	for current.Next != nil {
+		current = current.Next
+	}
+	current.Next = node
+
+}
+func (ll *ALinkedList) Traverse() {
+	current := ll.Head
+	for current != nil {
+		fmt.Print(current.Data)
+		fmt.Print(" ")
+		current = current.Next
+	}
+	fmt.Println()
+}
+func (ll *ALinkedList) Reverse() {
+	current := ll.Head
+	var prev *ANode = nil
+	for current != nil {
+		next := current.Next //store the next node temporarily
+		current.Next = prev
+		prev = current
+		current = next
+
+	}
+	ll.Head = prev
+}
+
+type FibGen struct {
+	memo map[int]int
+}
+
+func TestFibs(t *testing.T) {
+	fib := &FibGen{}
+	tests := []struct {
+		n    int
+		want int
+	}{
+		{5, 8},
+		{6, 13},
+		{7, 21},
+	}
+	for _, tt := range tests {
+		got := fib.Fibo(tt.n)
+		if !reflect.DeepEqual(got, tt.want) {
+			t.Errorf("got %v,want %v", got, tt.want)
+		}
+	}
+
+}
+func (fib *FibGen) Fibo(n int) int {
+	if n < 0 {
+		return -1
+	}
+	if fib.memo == nil {
+		fib.memo = make(map[int]int)
+	}
+	if val, found := fib.memo[n]; found {
+		return val
+	}
+	if n == 0 || n == 1 {
+		fib.memo[n] = 1
+	} else {
+		fib.memo[n] = fib.Fibo(n-1) + fib.Fibo(n-2)
+	}
+	return fib.memo[n]
+}
