@@ -2,10 +2,12 @@ package basics
 
 import (
 	"fmt"
-	"strings"
-	"testing"
+	"io"
 	"net/http"
-	"github.com/gin-gonic/gin"
+	"strings"
+	"sync"
+	"testing"
+	"os"
 )
 
 func TestX(t *testing.T) {
@@ -98,7 +100,62 @@ func TestULRS(t *testing.T){
 	urlfetch.urls=append(urlfetch.urls, "https://www.instagram.com/")
 	urlfetch.urls=append(urlfetch.urls, "https://www.google.com/maps")
 
-	
+	maxConcurrent:=2
 
+	var wg sync.WaitGroup
+
+	semaphore:=make(chan struct{},maxConcurrent)
+
+	for _,url:=range urlfetch.urls{
+		wg.Add(1)
+		go func (url string)  {
+			defer wg.Done()
+			semaphore<-struct{}{}
+
+			//http request
+			resp,err:=http.Get(url)
+			if err!=nil{
+				fmt.Printf("error fetching %s url %v\n",url,err)
+				return
+			}
+			defer resp.Body.Close()
+			content,err:=io.ReadAll(resp.Body)
+			if err!=nil{
+				fmt.Printf("error in reading the content for url %s\n %v ",url,err)
+				return
+			}
+			fmt.Println("content for url",url,string(content))
+			<-semaphore //release the semaphore
+		}(url)
+	}
+	wg.Wait()
 
 }
+
+/*
+Write a Go function that opens a file, reads its contents, and processes the data. 
+Ensure robust error handling throughout the process 
+(e.g., gracefully handle cases where the file doesn't exist, 
+or there are errors during the reading or processing).
+*/
+
+func TestFileOps(t *testing.T){
+	fmt.Println(fileops("./basics_test.go"))
+}
+func fileops(filePath string)(string,error){
+	fs,err:=os.Open(filePath)
+	if err!=nil{
+		fmt.Println(err)
+		return "",err
+	}
+	defer fs.Close()
+	data,err:=io.ReadAll(fs)
+	if err!=nil{
+		return "",err
+	}
+	return string(data),nil
+}
+
+
+
+
