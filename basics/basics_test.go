@@ -272,14 +272,137 @@ func TestMergeSortedArray(t *testing.T) {
 		expected []int
 	}{
 		{"both Empty", []int{}, []int{}, []int{}},
-		{"first emptry",[]int{},[]int{1,2,3},[]int{1,2,3}},
-		
+		{"first emptry", []int{}, []int{1, 2, 3}, []int{1, 2, 3}},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			result := mergethem(tc.arr1, tc.arr2)
 			if !reflect.DeepEqual(result, tc.expected) {
 				t.Errorf("expected %v and found %v for %s", tc.expected, result, tc.name)
+			}
+		})
+	}
+}
+
+/*
+	Write a function that determines if two strings are anagrams of each other.
+	An anagram is a word or phrase formed by rearranging the letters of a different word or phrase,
+	typically using all the original letters exactly once
+*/
+
+func isAnagram(s1, s2 string) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+	wordlist := make(map[rune]int)
+
+	// count occurences of each rune in s1
+	for _, v := range s1 {
+		wordlist[v]++
+	}
+
+	for _, v := range s2 {
+		if _, exists := wordlist[v]; exists {
+			wordlist[v]--
+			if wordlist[v] == 0 {
+				delete(wordlist, v)
+			}
+		} else {
+			return false
+		}
+
+	}
+
+	return len(wordlist) == 0
+}
+
+func TestAnagram(t *testing.T){
+	tests:=[]struct{
+		name string
+		s1 string
+		s2 string
+		expected bool
+	}{
+		{"valid","secure","rescue",true},
+		{"invalid","secure","ressue",false},
+	}
+
+	for _,test:=range tests{
+		t.Run(test.name,func(t *testing.T){
+			result:=isAnagram(test.s1,test.s2)
+			if result!=test.expected{
+				t.Errorf("expected %v and got %v ",test.expected,result)
+			}
+		})
+	}
+}
+
+/*
+Implement a function that checks if a string is a palindrome. 
+A palindrome is a word, phrase, number, or other sequences of characters which reads the same backward 
+as forward, ignoring spaces, punctuation, and case sensitivity.
+*/
+
+func isPalindrome(word string)bool{
+
+	for i,j:=0,len(word)-1;i<j;i,j=i+1,j-1{
+		if word[i]!=word[j]{
+			return false
+		}
+	}
+
+	return true
+}
+func TestPalidrome(t *testing.T){
+	tests:=[]struct{
+		name string
+		word string
+		expected bool
+	}{
+		{"valid","racecar",true},
+		{"invalid","sidecar",false},
+	}
+
+	for _,test:=range tests{
+		t.Run(test.name,func(t *testing.T){
+			found:=isPalindrome(test.word)
+			if found!=test.expected{
+				t.Errorf("expected %v and found %v for test %v",test.expected,found,test.name)
+			}
+		})
+	}
+}
+
+/*
+Write a function that finds the length of the longest substring without repeating characters. 
+For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3.
+*/
+
+func longestsubs(word string)int{
+	wordlist:=make(map[rune]int)
+
+	for _,w:=range word{
+		if _,exists:=wordlist[w];!exists{
+			wordlist[w]++
+		}
+	}
+	return len(wordlist)
+}
+
+func TestLongestSubstring(t *testing.T){
+	tests:=[]struct{
+		name string
+		word string
+		expected int
+	}{
+		{"first","abcabcbb",3},{"second","abcdefda",6},
+	}
+
+	for _,test:=range tests{
+		t.Run(test.name,func(t *testing.T){
+			result:=longestsubs(test.word)
+			if result!=test.expected{
+				t.Errorf("expected %v and found %v ,for test %v",test.expected,result,test.name)
 			}
 		})
 	}
