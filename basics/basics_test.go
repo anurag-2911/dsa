@@ -455,3 +455,213 @@ func TestCompressedSrting(t *testing.T) {
 		})
 	}
 }
+
+type StringOps struct{}
+
+func (sops *StringOps) palinchecker(word string) bool {
+	length := len(word) - 1
+
+	for i, j := 0, length; i < length; i, j = i+1, j-1 {
+		if word[i] != word[j] {
+			return false
+		}
+	}
+	return true
+}
+func TestStringsOps(t *testing.T) {
+	tests := []struct {
+		Name     string
+		Word     string
+		Expected bool
+	}{
+		{"racecar", "racecar", true},
+		{"race", "race", false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			sops := &StringOps{}
+			result := sops.palinchecker(test.Word)
+			if result != test.Expected {
+				t.Errorf("expected %v for %v got %v ", test.Expected, test.Name, result)
+			}
+		})
+	}
+}
+func TestAnag(t *testing.T) {
+	tests := []struct {
+		Name     string
+		Word1    string
+		Word2    string
+		Expected bool
+	}{
+		{"positive", "worth", "throw", true},
+	}
+	for _, test := range tests {
+		sops := &StringOps{}
+		result := sops.isAnagram(test.Word1, test.Word2)
+		if !reflect.DeepEqual(result, test.Expected) {
+			t.Errorf("expected %v,found %v", test.Word1, result)
+		}
+	}
+}
+func (sops *StringOps) isAnagram(word1, word2 string) bool {
+	wordlist := make(map[rune]int)
+
+	for _, v := range word1 {
+		wordlist[v]++
+	}
+
+	for _, v := range word2 {
+		if _, exists := wordlist[v]; exists {
+			wordlist[v]--
+			if wordlist[v] == 0 {
+				delete(wordlist, v)
+			}
+		}
+	}
+
+	return len(wordlist) == 0
+}
+
+/*
+Implement a method in Go to perform basic string compression using the counts of repeated characters.
+For example, the string "aabcccccaaa" would become "a2b1c5a3".
+If the "compressed" string would not become smaller than the original string,
+your program should return the original string
+*/
+
+func TestStringCompress(t *testing.T) {
+	tests := []struct {
+		TestName string
+		Word     string
+		Expected string
+	}{
+		{"first", "aabcccccaaa", "a2b1c5a3"},
+	}
+	for _, test := range tests {
+		t.Run(test.TestName, func(t *testing.T) {
+			sops := &StringOps{}
+			result := sops.compressed(test.Word)
+			if !reflect.DeepEqual(result, test.Expected) {
+				t.Errorf("wrong")
+			}
+		})
+	}
+
+}
+func (sops *StringOps) compressed(word string) string {
+	count := 1
+	var sb strings.Builder
+	for i := 1; i < len(word); i++ {
+		if word[i-1] == word[i] {
+			count++
+		} else {
+			sb.WriteByte(word[i-1])
+			sb.WriteString(strconv.Itoa(count))
+			count = 1
+		}
+	}
+	sb.WriteByte(word[len(word)-1])
+	sb.WriteString(strconv.Itoa(count))
+	return sb.String()
+}
+
+/*
+Write a Go program that takes a string containing any combination of the characters
+'(', ')', '{', '}', '[' and ']', and checks if the brackets are balanced.
+For brackets to be balanced, every opening bracket must have a corresponding
+closing bracket of the same type, and brackets must close in the correct order
+
+*/
+
+func TestBrackets(t *testing.T) {
+	tests := []struct {
+		Name       string
+		Word       string
+		IsBalanced bool
+	}{
+		{"first", "(xcf)", true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			sops := &StringOps{}
+			result := sops.IsBalanced(test.Word)
+			if !reflect.DeepEqual(result, test.IsBalanced) {
+				t.Errorf("wrong!!")
+			}
+		})
+	}
+}
+
+func TestProperBracket(t *testing.T){
+	// Test cases
+    tests := []string{"()", "()[]{}", "(]", "([)]", "{[]}", "[({})]", ""}
+	sop:=&StringOps{}
+    for _, test := range tests {
+        fmt.Printf("%s: %t\n", test, sop.IsBalanced(test))
+    }
+}
+func (sop *StringOps) IsBalanced(word string) bool {
+	//stack to hold opening bracket
+	var stack []rune
+
+	//map to hold matching opening bracket to closing bracket
+
+	bracketPairs := map[rune]rune{')': '(', ']': '[', '{': '}'}
+
+	for _, char := range word {
+		switch char {
+		case '(', '{', '[':
+			{
+				stack = append(stack, char)
+			}
+		case ')', '}', ']':
+			{
+				if len(stack)==0 {
+					return false
+				}
+				topelem:=stack[len(stack)-1]
+				stack=stack[0:len(stack)-1]
+				if bracketPairs[char]!=topelem{
+					return false
+				}
+			}
+
+		}
+	}
+
+	return len(stack) == 0
+}
+
+/*
+	Implement a function in Go that finds the length of the longest substring without repeating characters. 
+	For example, given "abcabcbb", the answer is "abc", which the length is 3. For "bbbbb" the longest substring is "b", 
+	with the length of 1
+*/
+
+func TestLongestSubs(t *testing.T){
+	tests:=[]string{"abcabcbb","bbbbb"}
+	for _,test:=range tests{
+		sops:=&StringOps{}
+		result:=sops.findLongestSubsLen(test)
+		fmt.Print(result)
+		fmt.Print(" ")
+	}
+}
+func(sops *StringOps)findLongestSubsLen(word string)int{
+	count:=0
+	charList:=make(map[rune]int)
+
+	for _,char:=range word{
+		if _,exists:=charList[char];exists{
+			break
+		}else{
+			charList[char]++
+			count++
+		}
+		
+	}
+	return count
+}
